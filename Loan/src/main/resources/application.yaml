@@ -1,0 +1,11 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: Loan
+
+  datasource:
+    url: jdbc:mysql://localhost:3312/loanDb
+    username: root
+    password: root

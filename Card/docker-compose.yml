@@ -1,0 +1,12 @@
+
+services:
+  eazyBank-mysql-card-service:
+    image: mysql:8.3.0
+    container_name: eazyBank-mysql-card-container
+    ports:
+      - "3311:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cardDb
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql

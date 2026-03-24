@@ -1,0 +1,11 @@
+services:
+  eazyBank-mysql-loan-service:
+    image: mysql:8.3.0
+    container_name: eazyBank-mysql-loan-container
+    ports:
+      - "3312:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: loanDb
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql

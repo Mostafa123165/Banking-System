@@ -1,0 +1,17 @@
+services:
+  eazyBank-mysql-account-service:
+    image: mysql:8.3.0
+    container_name: eazyBank-mysql-account-container
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: accountDb
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+    networks:
+        - eazyBank-network
+
+networks:
+    eazyBank-network:
+        driver: bridge
