@@ -29,7 +29,10 @@ A scalable and resilient banking system built using modern microservices archite
 - Scalable deployment with Kubernetes
 
 
-## 🐳 Running with Docker
 
-```bash
-docker-compose up --d
+
+
+<h2 align="center">📁 Project Structure</h2>
+<p align="center">
+  <img src="Project-Structure.png" width="700"/>
+</p>
