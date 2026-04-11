@@ -1,6 +1,7 @@
 package com.eazyBank.Loan.controller;
 
 import com.eazyBank.Loan.constants.LoansConstants;
+import com.eazyBank.Loan.dto.AccountContactInfoDto;
 import com.eazyBank.Loan.dto.LoansDto;
 import com.eazyBank.Loan.dto.ResponseDto;
 import com.eazyBank.Loan.service.ILoansService;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoansController {
 
     private ILoansService iLoansService;
-
+    private AccountContactInfoDto accountContactInfoDto;
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createLoan(@RequestParam
@@ -75,6 +76,11 @@ public class LoansController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(LoansConstants.STATUS_417, LoansConstants.MESSAGE_417_DELETE));
         }
+    }
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<AccountContactInfoDto> getAccountContactInfo() {
+        return ResponseEntity.ok(accountContactInfoDto);
     }
 
 }

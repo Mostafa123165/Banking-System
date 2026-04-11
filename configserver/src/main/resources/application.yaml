@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: "configserver"
+
+  profiles:
+    #active: native
+    active: git
+  cloud:
+    config:
+      server:
+        # native:
+          # search-locations: "classpath:/config"
+          # search-locations: "file:///home/mostafa/eazyBank/configserver/src/main/resources/config"
+        git:
+          uri: https://github.com/Mostafa123165/Banking-System-Config.git
+          default-label: master
+          timeout: 5
+          force-pull: true
+          clone-on-start: true
+server:
+  port: 8071

@@ -1,14 +1,15 @@
 package com.eazyBank.Account.controller;
 
 
+import com.eazyBank.Account.dto.AccountContactInfoDto;
 import com.eazyBank.Account.dto.CustomerDto;
 import com.eazyBank.Account.dto.ResponseDto;
 import com.eazyBank.Account.service.IAccountsService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 public class AccountsController {
 
     private final IAccountsService iAccountsService;
+
+    @Autowired
+    private AccountContactInfoDto accountContactInfoDto;
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto) {
@@ -51,6 +55,11 @@ public class AccountsController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(HttpStatus.EXPECTATION_FAILED.toString(), "Failed to delete account details"));
         }
+    }
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<AccountContactInfoDto> getAccountContactInfo() {
+        return ResponseEntity.ok(accountContactInfoDto);
     }
 
 

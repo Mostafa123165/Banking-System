@@ -3,9 +3,15 @@ server:
 
 spring:
   application:
-    name: Loan
+    name: "loan"
 
   datasource:
     url: jdbc:mysql://localhost:3312/loanDb
     username: root
     password: root
+
+  profiles:
+    active: "prod"
+
+  config:
+    import: "optional:configserver:http://localhost:8071/"

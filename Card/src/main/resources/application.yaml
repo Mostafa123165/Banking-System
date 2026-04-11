@@ -3,8 +3,14 @@ server:
 
 spring:
   application:
-    name: Card
+    name: "card"
+
   datasource:
-    url: jdbc:mysql://localhost:3311/cardDb?useSSL=false
+    url: jdbc:mysql://localhost:3311/cardDb
     username: root
     password: root
+  profiles:
+    active: "qa"
+
+  config:
+    import: "optional:configserver:http://localhost:8071/"

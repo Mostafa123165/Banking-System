@@ -2,9 +2,16 @@ server:
   port: 8081
 spring:
   application:
-    name: Account
+    name: "account"
 
   datasource:
     url: jdbc:mysql://localhost:3310/accountDb
     username: root
     password: root
+  profiles:
+    active: "qa"
+
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+
+

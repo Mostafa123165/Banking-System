@@ -1,12 +1,14 @@
 package com.eazyBank.Card.controller;
 
 import com.eazyBank.Card.constants.CardsConstants;
+import com.eazyBank.Card.dto.AccountContactInfoDto;
 import com.eazyBank.Card.dto.CardsDto;
 import com.eazyBank.Card.dto.ResponseDto;
 import com.eazyBank.Card.service.ICardsService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ public class CardsController {
 
     private ICardsService iCardsService;
 
+    @Autowired
+    private AccountContactInfoDto accountContactInfoDto;
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createCard(@Valid @RequestParam
@@ -72,6 +76,11 @@ public class CardsController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_DELETE));
         }
+    }
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<AccountContactInfoDto> getAccountContactInfo() {
+        return ResponseEntity.ok(accountContactInfoDto);
     }
 
 }
