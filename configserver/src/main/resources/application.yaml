@@ -19,3 +19,9 @@ spring:
           clone-on-start: true
 server:
   port: 8071
+
+encrypt:
+  key: 123sdf54a15aaAcdACV45CzokaA7asd8aA7
+
+
+
