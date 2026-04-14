@@ -1,0 +1,156 @@
+services:
+
+  rabbit:
+    image: "rabbitmq:4-management"
+    container_name: rabbitmq-container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test:  rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+    networks:
+      - eazyBank-network
+
+  configserver:
+    image: "mostafa3/configserver:s6"
+    container_name: configserver-container
+    ports:
+      - "8071:8071"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    networks:
+      - eazyBank-network
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+    environment:
+      SPRING_RABBITMQ_HOST: "rabbit"
+
+
+
+  accounts:
+    image: "mostafa3/account:s6"
+    container_name: accounts-container
+    ports:
+      - "8081:8081"
+    networks:
+      - eazyBank-network
+    depends_on:
+        configserver:
+          condition: service_healthy
+        account-db:
+          condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: "rabbit"
+      SPRING_DATASOURCE_URL: jdbc:mysql://account-db:3306/accountDb
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+
+  cards:
+    image: "mostafa3/card:s6"
+    container_name: cards-container
+    ports:
+      - "8082:8082"
+    networks:
+      - eazyBank-network
+    depends_on:
+      configserver:
+        condition: service_healthy
+      card-db:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: "rabbit"
+      SPRING_DATASOURCE_URL: jdbc:mysql://card-db:3306/cardDb
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+
+  loans:
+    image: "mostafa3/loan:s6"
+    container_name: loans-container
+    ports:
+      - "8083:8083"
+    networks:
+      - eazyBank-network
+    depends_on:
+      configserver:
+        condition: service_healthy
+      loan-db:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: "rabbit"
+      SPRING_DATASOURCE_URL: jdbc:mysql://loan-db:3306/loanDb
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+
+
+  account-db:
+    image: mysql:8.3.0
+    container_name: eazyBank-account-db
+    healthcheck:
+      test: "mysqladmin ping -h localhost -P 3306 -u root -proot"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: accountDb
+    networks:
+      - eazyBank-network
+    volumes:
+      - ./docker/mysql/account/data:/var/lib/mysql
+
+
+  card-db:
+    image: mysql:8.3.0
+    container_name: card-container-db
+    ports:
+      - "3311:3306"
+    healthcheck:
+      test: "mysqladmin ping -h localhost -P 3306 -u root -proot"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - eazyBank-network
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cardDb
+    volumes:
+      - ./docker/mysql/card/data:/var/lib/mysql
+
+  loan-db:
+    image: mysql:8.3.0
+    container_name: loan-container-db
+    ports:
+      - "3312:3306"
+    healthcheck:
+      test: "mysqladmin ping -h localhost -P 3306 -u root -proot"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - eazyBank-network
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: loanDb
+    volumes:
+      - ./docker/mysql/loan/data:/var/lib/mysql
+
+networks:
+    eazyBank-network:
+        driver: bridge
