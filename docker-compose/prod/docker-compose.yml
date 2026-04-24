@@ -46,15 +46,20 @@ services:
     networks:
       - eazyBank-network
     depends_on:
-        configserver:
-          condition: service_healthy
-        account-db:
-          condition: service_healthy
+      configserver:
+        condition: service_healthy
+      account-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_RABBITMQ_HOST: "rabbit"
       SPRING_DATASOURCE_URL: jdbc:mysql://account-db:3306/accountDb
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8070/eureka/"
+      SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
+
 
   cards:
     image: "mostafa3/card:s6"
@@ -68,11 +73,15 @@ services:
         condition: service_healthy
       card-db:
         condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_RABBITMQ_HOST: "rabbit"
       SPRING_DATASOURCE_URL: jdbc:mysql://card-db:3306/cardDb
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8070/eureka/"
+      SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
 
   loans:
     image: "mostafa3/loan:s6"
@@ -86,11 +95,15 @@ services:
         condition: service_healthy
       loan-db:
         condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_RABBITMQ_HOST: "rabbit"
       SPRING_DATASOURCE_URL: jdbc:mysql://loan-db:3306/loanDb
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8070/eureka/"
+      SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
 
 
   account-db:
@@ -110,8 +123,7 @@ services:
     networks:
       - eazyBank-network
     volumes:
-      - ./docker/mysql/account/data:/var/lib/mysql
-
+      - /home/mostafa/eazyBank/Account/docker/mysql/data:/var/lib/mysql
 
   card-db:
     image: mysql:8.3.0
@@ -130,7 +142,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: cardDb
     volumes:
-      - ./docker/mysql/card/data:/var/lib/mysql
+      - /home/mostafa/eazyBank/Card/docker/mysql/data:/var/lib/mysql
 
   loan-db:
     image: mysql:8.3.0
@@ -149,8 +161,27 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: loanDb
     volumes:
-      - ./docker/mysql/loan/data:/var/lib/mysql
+      - /home/mostafa/eazyBank/Loan/docker/mysql/data:/var/lib/mysql
+
+  eureka-server:
+    image: "mostafa3/eurekaserver:s6"
+    container_name: eureka-server-container
+    ports:
+      - "8070:8070"
+    depends_on:
+      configserver:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8070/actuator/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - eazyBank-network
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
 
 networks:
-    eazyBank-network:
-        driver: bridge
+  eazyBank-network:
+    driver: bridge
