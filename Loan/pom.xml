@@ -151,7 +151,7 @@
 				<version>3.3.2</version>
 				<configuration>
 					<to>
-						<image>mostafa3/loan:s6</image>
+						<image>mostafa3/loan:s9</image>
 					</to>
 				</configuration>
 			</plugin>

@@ -148,7 +148,7 @@
 				<version>3.3.2</version>
 				<configuration>
 					<to>
-						<image>mostafa3/card:s6</image>
+						<image>mostafa3/card:s9</image>
 					</to>
 				</configuration>
 			</plugin>

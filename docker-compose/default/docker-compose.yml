@@ -17,7 +17,7 @@ services:
       - eazyBank-network
 
   configserver:
-    image: "mostafa3/configserver:s6"
+    image: "mostafa3/configserver:s9"
     container_name: configserver-container
     ports:
       - "8071:8071"
@@ -39,12 +39,18 @@ services:
 
 
   accounts:
-    image: "mostafa3/account:s6"
+    image: "mostafa3/account:s9"
     container_name: accounts-container
     ports:
-      - "8081:8081"
+      - "8085:8085"
     networks:
       - eazyBank-network
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8085/actuator/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
         configserver:
           condition: service_healthy
@@ -62,12 +68,18 @@ services:
 
 
   cards:
-    image: "mostafa3/card:s6"
+    image: "mostafa3/card:s9"
     container_name: cards-container
     ports:
-      - "8082:8082"
+      - "8086:8086"
     networks:
       - eazyBank-network
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8086/actuator/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
       configserver:
         condition: service_healthy
@@ -84,12 +96,18 @@ services:
       SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
 
   loans:
-    image: "mostafa3/loan:s6"
+    image: "mostafa3/loan:s9"
     container_name: loans-container
     ports:
-      - "8083:8083"
+      - "8087:8087"
     networks:
       - eazyBank-network
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8087/actuator/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     depends_on:
       configserver:
         condition: service_healthy
@@ -164,7 +182,7 @@ services:
       - /home/mostafa/eazyBank/Loan/docker/mysql/data:/var/lib/mysql
 
   eureka-server:
-    image: "mostafa3/eurekaserver:s6"
+    image: "mostafa3/eurekaserver:s9"
     container_name: eureka-server-container
     ports:
       - "8070:8070"
@@ -181,6 +199,26 @@ services:
       - eazyBank-network
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+
+  apigateway:
+    image: "mostafa3/apigateway:s9"
+    container_name: apigateway-container
+    ports:
+      - "8081:8081"
+    depends_on:
+      configserver:
+        condition: service_healthy
+      loans:
+        condition: service_healthy
+      cards:
+        condition: service_healthy
+      accounts:
+        condition: service_healthy
+    environment:
+        SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+        EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8070/eureka/"
+    networks:
+      - eazyBank-network
 
 networks:
     eazyBank-network:

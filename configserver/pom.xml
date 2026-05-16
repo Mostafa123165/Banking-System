@@ -80,7 +80,7 @@
 				<version>3.3.2</version>
 				<configuration>
 					<to>
-						<image>mostafa3/configserver:s6</image>
+						<image>mostafa3/configserver:s9</image>
 					</to>
 				</configuration>
 			</plugin>
