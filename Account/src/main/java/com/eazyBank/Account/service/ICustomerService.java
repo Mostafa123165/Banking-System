@@ -5,6 +5,6 @@ import com.eazyBank.Account.dto.CustomerDetailsDto;
 public interface ICustomerService {
 
 
-    CustomerDetailsDto fetchCustomerDetailsByMobileNumber(String mobileNumber);
+    CustomerDetailsDto fetchCustomerDetailsByMobileNumber(String mobileNumber,String correlationId);
 
 }

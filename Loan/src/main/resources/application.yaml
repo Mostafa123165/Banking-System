@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 0
 
 spring:
   application:
@@ -37,3 +37,10 @@ management:
     web:
       exposure:
         include: "*"
+
+
+logging:
+  level:
+    com:
+      eazyBank:
+        Loan: DEBUG
