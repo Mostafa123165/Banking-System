@@ -4,6 +4,11 @@ spring:
   application:
     name: "account"
 
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
   datasource:
     url: jdbc:mysql://localhost:3310/accountDb
     username: root
@@ -49,3 +54,11 @@ logging:
     com:
       eazyBank:
         Account: DEBUG
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 5
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50

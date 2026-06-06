@@ -16,6 +16,7 @@ spring:
             locator:
               enabled: false
 
+
 management:
   endpoints:
     web:
@@ -24,3 +25,12 @@ management:
   endpoint:
     gateway:
       access: unrestricted
+
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 5
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50

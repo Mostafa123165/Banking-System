@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("loan")
+@FeignClient(value = "loan",fallback = LoanFeignClientFallback.class)
 public interface LoanFeignClient {
 
     @GetMapping(value = "/api/v1/loans/fetch",consumes = "application/json")

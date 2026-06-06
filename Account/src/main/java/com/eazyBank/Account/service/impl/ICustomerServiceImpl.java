@@ -15,6 +15,7 @@ import com.eazyBank.Account.service.ICustomerService;
 import com.eazyBank.Account.service.client.CardFeignClient;
 import com.eazyBank.Account.service.client.LoanFeignClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -42,12 +43,13 @@ public class ICustomerServiceImpl implements ICustomerService {
         CustomerDto customerDto = customerMapper.map(customer);
         customerDto.setAccountsDto(accountsMapper.map(accounts));
 
-        CardDto cardDto = cardFeignClient.fetchCardDetailsByMobileNumber(mobileNumber,correlationId).getBody();
-        LoansDto loansDto = loanFeignClient.fetchLoanDetailsByMobileNumber(mobileNumber,correlationId).getBody();
+        ResponseEntity<CardDto> cardDto   = cardFeignClient.fetchCardDetailsByMobileNumber(mobileNumber,correlationId);
+        ResponseEntity<LoansDto> loansDto = loanFeignClient.fetchLoanDetailsByMobileNumber(mobileNumber,correlationId);
 
         return new CustomerDetailsDto(
                 customerDto,
-                loansDto,
-                cardDto );
+                loansDto == null ? null : loansDto.getBody(),
+                cardDto == null ? null : cardDto.getBody()
+        );
     }
 }
