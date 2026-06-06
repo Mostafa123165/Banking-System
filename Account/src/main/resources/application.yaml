@@ -62,3 +62,19 @@ resilience4j.circuitbreaker:
       permittedNumberOfCallsInHalfOpenState: 5
       waitDurationInOpenState: 10s
       failureRateThreshold: 50
+
+
+resilience4j.retry:
+  configs:
+    default:
+      maxAttempts: 3
+      waitDuration: 1000ms
+      enable-exponential-backoff: true
+      exponential-backoff-multiplier: 2
+      retryExceptions:
+        - feign.FeignException
+        - java.net.ConnectException
+        - java.io.IOException
+  instances:
+    cardServiceRetry:
+      baseConfig: default

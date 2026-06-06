@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.ServiceUnavailableException;
+
 /**
  * @author Eazy Bytes
  */
@@ -43,9 +45,10 @@ public class LoansController {
 
 
     @GetMapping("/fetch")
+
     public ResponseEntity<LoansDto> fetchLoanDetails(@RequestHeader(value = "eazybank-correlation-id") String correlationId,
                                                      @RequestParam @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                               String mobileNumber) {
+                                                               String mobileNumber) throws ServiceUnavailableException {
         LOGGER.debug("Received request to fetch loan details for mobile number: {}, correlation id: {}", mobileNumber,correlationId);
 
         LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);

@@ -34,3 +34,8 @@ resilience4j.circuitbreaker:
       permittedNumberOfCallsInHalfOpenState: 5
       waitDurationInOpenState: 10s
       failureRateThreshold: 50
+
+
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: DEBUG

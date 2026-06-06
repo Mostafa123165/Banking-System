@@ -5,9 +5,11 @@ import com.eazyBank.Card.dto.AccountContactInfoDto;
 import com.eazyBank.Card.dto.CardsDto;
 import com.eazyBank.Card.dto.ResponseDto;
 import com.eazyBank.Card.service.ICardsService;
+import io.netty.handler.timeout.TimeoutException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.rmi.ConnectException;
+import java.sql.Connection;
 
 
 @RestController
@@ -46,10 +50,11 @@ public class CardsController {
     @GetMapping("/fetch")
     public ResponseEntity<CardsDto> fetchCardDetails(@RequestHeader(value = "eazybank-correlation-id") String CorrelationId,
                                                      @RequestParam @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                     String mobileNumber) {
+                                                     String mobileNumber) throws ConnectException {
         LOGGER.debug("Received request to fetch card details for mobile number: {} , correlationId: {}", mobileNumber, CorrelationId);
-        CardsDto cardsDto = iCardsService.fetchCard(mobileNumber);
-        return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
+        throw new ConnectException("");
+        /*CardsDto cardsDto = iCardsService.fetchCard(mobileNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(cardsDto);*/
     }
 
 

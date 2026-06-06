@@ -5,6 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+
+import java.time.Duration;
 
 import static org.springframework.cloud.gateway.support.RouteMetadataUtils.RESPONSE_TIMEOUT_ATTR;
 
@@ -27,12 +31,19 @@ public class ApigatewayApplication {
 						.uri("lb://ACCOUNT")
 				)
 				.route(p -> p.path("/eazyBank/cards/**")
-						.filters(f -> f.rewritePath("/eazyBank/cards/(?<segment>.*)", "/${segment}"))
-						.uri("lb://CARD")
+						.filters(f -> f.rewritePath("/eazyBank/cards/(?<segment>.*)", "/${segment}")
+								.retry(r -> r.setRetries(3)
+										.setMethods(HttpMethod.GET)
+										.setBackoff(Duration.ofSeconds(1), Duration.ofSeconds(10), 2,true))
+						).uri("lb://CARD")
 				).route(p -> p.path("/eazyBank/loans/**")
 						.filters(f -> f.rewritePath("/eazyBank/loans/(?<segment>.*)", "/${segment}")
-								// per-route request timeout removed; apply global timeout via configuration or a GlobalFilter
-						).metadata("timeout","2000")
+								.retry(r -> r.setRetries(3)
+								.setMethods(HttpMethod.GET)
+								.setSeries()
+								.setStatuses(HttpStatus.INTERNAL_SERVER_ERROR)
+								.setBackoff(Duration.ofSeconds(1), Duration.ofSeconds(10), 2,true))
+						)
 						.uri("lb://LOAN")
 				).build();
 	}
